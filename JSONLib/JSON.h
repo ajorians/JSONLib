@@ -33,6 +33,8 @@ public:
    JSON* Element(std::size_t index);
    JSON* operator[](std::size_t index);
 
+   std::string Stringify() const;
+
 protected:
    JSON();
    JSON(const std::string& strJSON);

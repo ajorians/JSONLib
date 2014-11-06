@@ -1,5 +1,6 @@
 #include "JSON.h"
 #include <cassert>
+#include <sstream>
 
 namespace {
    bool SkipWhitespace(const char **data)
@@ -87,6 +88,61 @@ namespace {
          factor *= 0.1;
       }
       return decimal;
+   }
+
+   std::string StringifyString(const std::string& str)
+   {
+      std::string strRet = "\"";
+      std::string::const_iterator iter = str.begin();
+      while (iter != str.end())
+      {
+         char chr = *iter;
+         if (chr == '"' || chr == '\\' || chr == '/')
+         {
+            strRet += '\\';
+            strRet += chr;
+         }
+         else if (chr == L'\b')
+         {
+            strRet += "\\b";
+         }
+         else if (chr == L'\f')
+         {
+            strRet += "\\f";
+         }
+         else if (chr == L'\n')
+         {
+            strRet += "\\n";
+         }
+         else if (chr == L'\r')
+         {
+            strRet += "\\r";
+         }
+         else if (chr == L'\t')
+         {
+            strRet += "\\t";
+         }
+         else if (chr < L' ' || chr > 126)
+         {
+            strRet += "\\u";
+            for (int i = 0; i < 4; i++)
+            {
+               int value = (chr >> 12) & 0xf;
+               if (value >= 0 && value <= 9)
+                  strRet += (char)('0' + value);
+               else if (value >= 10 && value <= 15)
+                  strRet += (char)('A' + (value - 10));
+               chr <<= 4;
+            }
+         }
+         else
+         {
+            strRet += chr;
+         }
+         iter++;
+      }
+      strRet += "\"";
+      return strRet;
    }
 }
 
@@ -285,7 +341,7 @@ FailureNumber:
             return new JSON(mapValues);
          }
 
-         if( *((*data)++) != ',' ) {
+         if( **data != ',' ) {
             goto FailureObject;
          }
 
@@ -386,4 +442,64 @@ JSON* JSON::Element(std::size_t index)
 JSON* JSON::operator[](std::size_t index)
 {
    return Element(index);
+}
+
+std::string JSON::Stringify() const
+{
+   std::string strRet;
+
+   switch (m_eType)
+   {
+   case JSONType_Null:
+      strRet = "null";
+      break;
+   case JSONType_String:
+      strRet = StringifyString(m_strValue);
+      break;
+   case JSONType_Bool:
+      strRet = m_bValue ? "true" : "false";
+      break;
+   case JSONType_Number:
+      {
+         /*if (isinf(m_dValue) || isnan(m_dValue))
+            strRet = "null";
+         else*/
+         {
+            std::stringstream ss;
+            ss.precision(15);
+            ss << m_dValue;
+            strRet = ss.str();
+         }
+         break;
+      }
+   case JSONType_Array:
+      {
+         strRet = "[";
+         JSONArray::const_iterator iter = m_apItems.begin();
+         while (iter != m_apItems.end())
+         {
+            strRet += (*iter)->Stringify();
+            if (++iter != m_apItems.end())
+               strRet += ",";
+         }
+         strRet += "]";
+         break;
+      }
+   case JSONType_Object:
+      {
+         strRet = "{";
+         JSONObjects::const_iterator iter = m_mapElements.begin();
+         while (iter != m_mapElements.end())
+         {
+            strRet += StringifyString((*iter).first);
+            strRet += ":";
+            strRet += (*iter).second->Stringify();
+            if (++iter != m_mapElements.end())
+               strRet += ",";
+         }
+         strRet += "}";
+         break;
+      }
+   }
+   return strRet;
 }
