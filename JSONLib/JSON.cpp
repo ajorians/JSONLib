@@ -169,6 +169,12 @@ JSON::JSON(bool b)
    m_bValue = b;
 }
 
+JSON::JSON(int n)
+{
+   m_eType = JSONType_Number;
+   m_dValue = n;
+}
+
 JSON::JSON(double d)
 {
    m_eType = JSONType_Number;

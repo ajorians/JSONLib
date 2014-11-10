@@ -40,6 +40,7 @@ public:
    JSON(const std::string& strJSON);
    JSON(const char* pstrJSON);
    JSON(bool b);
+   JSON(int n);
    JSON(double d);
    JSON(const std::vector<JSON*>& apValues);
    JSON(const std::map<std::string, JSON*>& mapValues);

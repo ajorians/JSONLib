@@ -82,6 +82,8 @@ TEST(JSONTest, TestConstructing) {
    JSONObjects obj;
    obj["firstName"] = new JSON("John");
    obj["lastName"] = new JSON("Smith");
+   int nValue = 5;
+   obj["lastName"] = new JSON(nValue);
    JSON node(obj);
 }
 
