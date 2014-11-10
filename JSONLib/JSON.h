@@ -53,7 +53,7 @@ public:
    bool IsArray() const;
    bool IsObject() const;
 
-   const std::string& AsString() const;
+   std::string AsString() const;
    bool AsBool() const;
    double AsNumber() const;
    const JSONArray& AsArray() const;
