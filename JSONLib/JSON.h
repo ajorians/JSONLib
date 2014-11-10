@@ -35,7 +35,7 @@ public:
 
    std::string Stringify() const;
 
-protected:
+public:
    JSON();
    JSON(const std::string& strJSON);
    JSON(const char* pstrJSON);
