@@ -144,6 +144,43 @@ namespace {
       strRet += "\"";
       return strRet;
    }
+
+   std::string DeStringifyString(const std::string& str)
+   {
+      std::string strRet;
+      std::string::const_iterator iter = str.begin();
+      bool bEscape = false;
+      while (iter != str.end())
+      {
+         char ch = *iter;
+         iter++;
+         if( bEscape==false && ch == '\\' ) {
+            bEscape = true;
+            continue;
+         }
+
+         bEscape = false;
+
+         //Could be better; but this works! :)
+         if( bEscape ) {
+            switch(ch)
+            {
+            case '\\':
+               strRet += '\\';
+               continue;
+            case '"':
+               strRet += '"';
+               continue;
+            case '/':
+               strRet += '/';
+               continue;
+            }
+         }
+
+         strRet += ch;
+      }
+      return strRet;
+   }
 }
 
 JSON::JSON()
@@ -200,7 +237,7 @@ bool JSON::IsNumber() const{ return m_eType == JSONType_Number; }
 bool JSON::IsArray() const{ return m_eType == JSONType_Array; }
 bool JSON::IsObject() const{ return m_eType == JSONType_Object; }
 
-const std::string& JSON::AsString() const { assert(IsString()); return m_strValue; }
+std::string JSON::AsString() const { assert(IsString()); return DeStringifyString(m_strValue); }
 bool JSON::AsBool() const { assert(IsBool()); return m_bValue; }
 double JSON::AsNumber() const { assert(IsNumber()); return m_dValue; }
 const JSONArray& JSON::AsArray() const { assert(IsArray()); return m_apItems; }
