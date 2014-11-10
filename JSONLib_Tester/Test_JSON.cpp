@@ -67,6 +67,24 @@ TEST(JSONTest, TestConstruction) {
    delete pJSON;
 }
 
+TEST(JSONTest, TestEscapeCharacters) {
+   std::string strInput = "{\
+                          \"firstName\": \"Jo\\hn\",\
+                          \"lastName\": \"Smi\\th\"}";
+
+   JSON* pJSON = JSON::Parse(strInput);
+
+   std::string str = pJSON->Stringify();
+   delete pJSON;
+}
+
+TEST(JSONTest, TestConstructing) {
+   JSONObjects obj;
+   obj["firstName"] = new JSON("John");
+   obj["lastName"] = new JSON("Smith");
+   JSON node(obj);
+}
+
 int main(int argc, char** argv)
 {
    ::testing::InitGoogleTest(&argc, argv);
