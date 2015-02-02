@@ -87,6 +87,18 @@ TEST(JSONTest, TestConstructing) {
    JSON node(obj);
 }
 
+TEST(JSONTest, TestConst) {
+   std::string strInput = "{\"event\":\"comment\",\"content\":{\"title\":\"test\",\"text\":\"hello\"}}";
+   JSON* pJSON = JSON::Parse(strInput);
+   ASSERT_TRUE(pJSON != NULL);
+   const JSON* pContent = pJSON->Child("content");
+   ASSERT_TRUE(pContent != NULL);
+   JSON jContent(pContent->AsObject());
+   JSON* pText = jContent["text"];
+   ASSERT_TRUE(pText != NULL);
+   ASSERT_TRUE(pText->IsString());
+}
+
 int main(int argc, char** argv)
 {
    ::testing::InitGoogleTest(&argc, argv);
