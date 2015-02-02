@@ -468,6 +468,19 @@ JSON* JSON::operator[](const char* pstr)
    return Child(pstr);
 }
 
+const JSON* JSON::Child(const char* pstrName) const
+{
+   JSONObjects::const_iterator it = m_mapElements.find(pstrName);
+   if( it != m_mapElements.end() )
+      return it->second;
+   return NULL;
+}
+
+const JSON* JSON::operator[](const char* pstr) const
+{
+   return Child(pstr);
+}
+
 std::size_t JSON::ElementCount() const
 {
    if( m_eType == JSONType_Object )
@@ -483,6 +496,18 @@ JSON* JSON::Element(std::size_t index)
 }
 
 JSON* JSON::operator[](std::size_t index)
+{
+   return Element(index);
+}
+
+const JSON* JSON::Element(std::size_t index) const
+{
+   if( index < m_apItems.size() )
+      return m_apItems[index];
+   return NULL;
+}
+
+const JSON* JSON::operator[](std::size_t index) const
 {
    return Element(index);
 }

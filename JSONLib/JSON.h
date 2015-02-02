@@ -28,10 +28,14 @@ public:
    bool HasChild(const char* pstrName) const;
    JSON* Child(const char* pstrName);
    JSON* operator[](const char* pstr);
+   const JSON* Child(const char* pstrName) const;
+   const JSON* operator[](const char* pstrName) const;
 
    std::size_t ElementCount() const;
    JSON* Element(std::size_t index);
    JSON* operator[](std::size_t index);
+   const JSON* Element(std::size_t index) const;
+   const JSON* operator[](std::size_t index) const;
 
    std::string Stringify() const;
 
