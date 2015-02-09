@@ -69,8 +69,8 @@ TEST(JSONTest, TestConstruction) {
 
 TEST(JSONTest, TestEscapeCharacters) {
    std::string strInput = "{\
-                          \"firstName\": \"Jo\\hn\",\
-                          \"lastName\": \"Smi\\th\"}";
+                          \"firstName\": \"Jo\\\\hn\",\
+                          \"lastName\": \"Smi\\\\th\"}";
 
    JSON* pJSON = JSON::Parse(strInput);
 
@@ -87,7 +87,7 @@ TEST(JSONTest, TestFlowResponse) {
 }
 
 TEST(JSONTest, TestFlowResponse2) {
-   std::string strInput = "{\"event\":\"message\",\"tags\":[\":url\"],\"uuid\":\"qrxZtRh5mf_-UKRD\",\"id\":21946,\"flow\":\"9369c27b-da23-4139-9c21-75ca2e3e6f6c\",\"content\":\"Win10 news,  the office preview apps are available in the beta Store in Win 10,  just search for \"excel preview\", \"word preview\", or \"powerpoint preview\" : http:\\/\\/screencast.com\\/t\\/uuSYQTsCk more text\",\"sent\":1423436950953,\"app\":\"chat\",\"created_at\":\"2015-02-08T23:09:10.953Z\",\"attachments\":[],\"user\":\"107463\"}";
+   std::string strInput = "{\"event\":\"message\",\"tags\":[\":url\"],\"uuid\":\"qrxZtRh5mf_-UKRD\",\"id\":21946,\"flow\":\"9369c27b-da23-4139-9c21-75ca2e3e6f6c\",\"content\":\"Win10 news,  the office preview apps are available in the beta Store in Win 10,  just search for \\\"excel preview\\\", \\\"word preview\\\", or \\\"powerpoint preview\\\" : http:\\/\\/screencast.com\\/t\\/uuSYQTsCk more text\",\"sent\":1423436950953,\"app\":\"chat\",\"created_at\":\"2015-02-08T23:09:10.953Z\",\"attachments\":[],\"user\":\"107463\"}";
 
    JSON* pJSON = JSON::Parse(strInput);
    ASSERT_TRUE(pJSON != NULL);

@@ -3,6 +3,8 @@
 #include <sstream>
 
 namespace {
+   static inline bool special_strlen(const char *s, size_t n);
+
    bool SkipWhitespace(const char **data)
    {
       while (**data != 0 && (**data == ' ' || **data == '\t' || **data == '\r' || **data == '\n'))
@@ -15,20 +17,89 @@ namespace {
    {
       str.clear();
 
-      while( **data != 0 ) {
-         char chNext = **data;
+      while (**data != 0)
+      {
+         // Save the char so we can change it if need be
+         char next_char = **data;
 
-         if( chNext == '"' ) {
+         // Escaping something?
+         if (next_char == '\\')
+         {
+            // Move over the escape char
             (*data)++;
-            str.reserve();
+
+            // Deal with the escaped char
+            switch (**data)
+            {
+            case '"': next_char = '"'; break;
+            case '\\': next_char = '\\'; break;
+            case '/': next_char = '/'; break;
+            case 'b': next_char = '\b'; break;
+            case 'f': next_char = '\f'; break;
+            case 'n': next_char = '\n'; break;
+            case 'r': next_char = '\r'; break;
+            case 't': next_char = '\t'; break;
+            case 'u':
+               {
+                  // We need 5 chars (4 hex + the 'u') or its not valid
+                  if (!special_strlen(*data, 5))
+                     return false;
+
+                  // Deal with the chars
+                  next_char = 0;
+                  for (int i = 0; i < 4; i++)
+                  {
+                     // Do it first to move off the 'u' and leave us on the
+                     // final hex digit as we move on by one later on
+                     (*data)++;
+
+                     next_char <<= 4;
+
+                     // Parse the hex digit
+                     if (**data >= '0' && **data <= '9')
+                        next_char |= (**data - '0');
+                     else if (**data >= 'A' && **data <= 'F')
+                        next_char |= (10 + (**data - 'A'));
+                     else if (**data >= 'a' && **data <= 'f')
+                        next_char |= (10 + (**data - 'a'));
+                     else
+                     {
+                        // Invalid hex digit = invalid JSON
+                        return false;
+                     }
+                  }
+                  break;
+               }
+
+               // By the spec, only the above cases are allowed
+            default:
+               return false;
+            }
+         }
+
+         // End of the string?
+         else if (next_char == '"')
+         {
+            (*data)++;
+            str.reserve(); // Remove unused capacity
             return true;
          }
 
-         str += chNext;
+         // Disallowed char?
+         else if (next_char < ' ' && next_char != '\t')
+         {
+            // SPEC Violation: Allow tabs due to real world cases
+            return false;
+         }
 
+         // Add the next char
+         str += next_char;
+
+         // Move on
          (*data)++;
       }
 
+      // If we're here, the string ended incorrectly
       return false;
    }
 
