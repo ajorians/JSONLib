@@ -89,7 +89,7 @@ namespace {
          else if (next_char < ' ' && next_char != '\t')
          {
             // SPEC Violation: Allow tabs due to real world cases
-            return false;
+            //return false;
          }
 
          // Add the next char
